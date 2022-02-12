@@ -30,6 +30,30 @@ class AlbumsHandler {
       return response;
     }
   }
+
+  getAlbumByIdHandler(request, h) {
+    try {
+      const { id } = request.params;
+
+      const album = this._service.getAlbumById(id);
+
+      return {
+        status: 'success',
+        data: {
+          album,
+        },
+      };
+    } catch (error) {
+      const response = h.response({
+        status: 'fail',
+        message: error.message,
+      });
+
+      response.code(404);
+
+      return response;
+    }
+  }
 }
 
 module.exports = AlbumsHandler;
