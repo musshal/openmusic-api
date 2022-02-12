@@ -33,6 +33,20 @@ class AlbumsService {
 
     return album;
   }
+
+  editAlbumById(id, { name, year }) {
+    const index = this._albums.findIndex((album) => album.id === id);
+
+    if (index === -1) {
+      throw new Error('Gagal memperbarui album. Id tidak ditemukan');
+    }
+
+    this._albums[index] = {
+      ...this._albums[index],
+      name,
+      year,
+    };
+  }
 }
 
 module.exports = AlbumsService;
