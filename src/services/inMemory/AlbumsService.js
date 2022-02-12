@@ -47,6 +47,16 @@ class AlbumsService {
       year,
     };
   }
+
+  deleteAlbumById(id) {
+    const index = this._albums.findIndex((album) => album.id === id);
+
+    if (index === -1) {
+      throw new Error('Album gagal dihapus. Id tidak ditemukan');
+    }
+
+    this._albums.splice(index, 1);
+  }
 }
 
 module.exports = AlbumsService;
