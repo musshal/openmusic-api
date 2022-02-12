@@ -34,7 +34,13 @@ class SongsService {
   }
 
   getSongs() {
-    return this._songs;
+    const songs = this._songs.map((song) => ({
+      id: song.id,
+      title: song.title,
+      performer: song.performer,
+    }));
+
+    return songs;
   }
 
   getSongById(id) {
