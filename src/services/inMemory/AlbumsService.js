@@ -9,13 +9,15 @@ class AlbumsService {
     const id = nanoid(16);
 
     const newAlbum = {
+      id,
       name,
       year,
     };
 
     this._albums.push(newAlbum);
 
-    const isSuccess = this._albums.filter((album) => album.id === id).length > 0;
+    const isSuccess =
+      this._albums.filter((album) => album.id === id).length > 0;
 
     if (!isSuccess) {
       throw new Error('Album gagal ditambahkan');
