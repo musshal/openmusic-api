@@ -1,0 +1,31 @@
+{
+  "name": "openmusic-api",
+  "version": "1.0.0",
+  "description": "Open source music player app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-dev": "nodemon ./src/server.js",
+    "lint": "eslint ./ --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/musshal/openmusic-api.git"
+  },
+  "author": "Musthafa Faishal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/musshal/openmusic-api/issues"
+  },
+  "homepage": "https://github.com/musshal/openmusic-api#readme",
+  "devDependencies": {
+    "eslint": "^8.9.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "@hapi/hapi": "^20.2.1",
+    "dotenv": "^16.0.0"
+  }
+}
