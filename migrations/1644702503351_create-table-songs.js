@@ -19,11 +19,13 @@ exports.up = (pgm) => {
       notNull: true,
     },
     duration: {
-      type: 'INTEGER(50)',
+      type: 'INTEGER',
       notNull: false,
     },
-    albumId: 'VARCHAR(50)',
-    notNull: false,
+    albumId: {
+      type: 'VARCHAR(50)',
+      notNull: false,
+    },
   });
 };
 
