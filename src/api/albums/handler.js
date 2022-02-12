@@ -4,20 +4,31 @@ class AlbumsHandler {
   }
 
   postAlbumHandler(request, h) {
-    const { name, year } = request.payload;
+    try {
+      const { name, year } = request.payload;
 
-    const albumId = this._service.addAlbum({ name, year });
+      const albumId = this._service.addAlbum({ name, year });
 
-    const response = h.response({
-      status: 'success',
-      data: {
-        albumId,
-      },
-    });
+      const response = h.response({
+        status: 'success',
+        data: {
+          albumId,
+        },
+      });
 
-    response.code(201);
+      response.code(201);
 
-    return response;
+      return response;
+    } catch (error) {
+      const response = h.response({
+        status: 'fail',
+        message: error.message,
+      });
+
+      response.code(400);
+
+      return response;
+    }
   }
 }
 
