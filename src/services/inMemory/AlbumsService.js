@@ -23,6 +23,16 @@ class AlbumsService {
 
     return id;
   }
+
+  getAlbumById(id) {
+    const album = this._albums.filter((a) => a.id === id)[0];
+
+    if (!album) {
+      throw new Error('Album tidak ditemukan');
+    }
+
+    return album;
+  }
 }
 
 module.exports = AlbumsService;
