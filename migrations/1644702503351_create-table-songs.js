@@ -10,6 +10,10 @@ exports.up = (pgm) => {
       type: 'TEXT',
       notNull: true,
     },
+    year: {
+      type: 'INTEGER',
+      notNull: true,
+    },
     genre: {
       type: 'TEXT',
       notNull: true,
