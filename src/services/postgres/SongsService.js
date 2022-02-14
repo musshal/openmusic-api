@@ -2,7 +2,6 @@ const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
-const { mapSongsDBToModel } = require('../../utils');
 
 class SongsService {
   constructor() {
@@ -32,7 +31,9 @@ class SongsService {
     if (title !== undefined) {
       if (performer !== undefined) {
         const result = await this._pool.query(
-          `SELECT id, title, performer FROM songs WHERE LOWER(title) LIKE '%${title}%' AND LOWER(performer) LIKE '%${performer}%'`,
+          `SELECT id, title, performer FROM songs
+          WHERE LOWER(title) LIKE '%${title}%'
+          AND LOWER(performer) LIKE '%${performer}%'`,
         );
 
         if (!result.rowCount) {
@@ -43,7 +44,8 @@ class SongsService {
       }
 
       const result = await this._pool.query(
-        `SELECT id, title, performer FROM songs WHERE LOWER(title) LIKE '%${title}%'`,
+        `SELECT id, title, performer FROM songs
+        WHERE LOWER(title) LIKE '%${title}%'`,
       );
 
       if (!result.rowCount) {
@@ -55,7 +57,8 @@ class SongsService {
 
     if (performer !== undefined) {
       const result = await this._pool.query(
-        `SELECT id, title, performer FROM songs WHERE LOWER(performer) LIKE '%${performer}%'`,
+        `SELECT id, title, performer FROM songs
+        WHERE LOWER(performer) LIKE '%${performer}%'`,
       );
 
       if (!result.rowCount) {
@@ -84,11 +87,11 @@ class SongsService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundError('Lagu tidak ditemukan');
     }
 
-    return result.rows.map(mapSongsDBToModel)[0];
+    return result.rows[0];
   }
 
   async editSongById(id, {
@@ -101,7 +104,7 @@ class SongsService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundError('Gagal memperbarui lagu. Id tidak ditemukan');
     }
   }
@@ -114,7 +117,7 @@ class SongsService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundError('Lagu gagal dihapus. Id tidak ditemukan');
     }
   }
