@@ -46,14 +46,13 @@ class AlbumsService {
     }
 
     const album = albumResult.rows.map(mapAlbumsDBToModel)[0];
-    const songs = songsResult.rows.map(mapSongsDBToModel);
-    const mapSongs = songs.map((song) => ({
+    const songs = songsResult.rows.map(mapSongsDBToModel).map((song) => ({
       id: song.id,
       title: song.title,
       performer: song.performer,
     }));
 
-    album.songs = mapSongs;
+    album.songs = songs;
 
     return album;
   }
