@@ -12,7 +12,7 @@ class SongsService {
   async addSong({
     title, year, genre, performer, duration, albumId,
   }) {
-    const id = nanoid(16);
+    const id = `song-${nanoid(16)}`;
 
     const query = {
       text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id',
@@ -32,65 +32,48 @@ class SongsService {
     if (title !== undefined) {
       if (performer !== undefined) {
         const result = await this._pool.query(
-          `SELECT * FROM songs WHERE LOWER(title) LIKE '%${title}%' AND LOWER(performer) LIKE '%${performer}%'`,
+          `SELECT id, title, performer FROM songs WHERE LOWER(title) LIKE '%${title}%' AND LOWER(performer) LIKE '%${performer}%'`,
         );
 
-        const songs = result.rows.map(mapSongsDBToModel).map((song) => ({
-          id: song.id,
-          title: song.title,
-          performer: song.performer,
-        }));
-
-        if (!songs) {
-          throw NotFoundError('Lagu tidak ditemukan');
+        if (!result.rowCount) {
+          throw new NotFoundError('Lagu tidak ditemukan');
         }
 
-        return songs;
+        return result.rows;
       }
 
       const result = await this._pool.query(
-        `SELECT * FROM songs WHERE LOWER(title) LIKE '%${title}%'`,
+        `SELECT id, title, performer FROM songs WHERE LOWER(title) LIKE '%${title}%'`,
       );
 
-      const songs = result.rows.map(mapSongsDBToModel).map((song) => ({
-        id: song.id,
-        title: song.title,
-        performer: song.performer,
-      }));
-
-      if (!songs) {
-        throw NotFoundError('Lagu tidak ditemukan');
+      if (!result.rowCount) {
+        throw new NotFoundError('Lagu tidak ditemukan');
       }
 
-      return songs;
+      return result.rows;
     }
 
     if (performer !== undefined) {
       const result = await this._pool.query(
-        `SELECT * FROM songs WHERE LOWER(performer) LIKE '%${performer}%'`,
+        `SELECT id, title, performer FROM songs WHERE LOWER(performer) LIKE '%${performer}%'`,
       );
-      const songs = result.rows.map(mapSongsDBToModel).map((song) => ({
-        id: song.id,
-        title: song.title,
-        performer: song.performer,
-      }));
 
-      if (!songs) {
-        throw NotFoundError('Lagu tidak ditemukan');
+      if (!result.rowCount) {
+        throw new NotFoundError('Lagu tidak ditemukan');
       }
 
-      return songs;
+      return result.rows;
     }
 
-    const result = await this._pool.query('SELECT * FROM songs');
+    const result = await this._pool.query(
+      'SELECT id, title, performer FROM songs',
+    );
 
-    const songs = result.rows.map(mapSongsDBToModel).map((song) => ({
-      id: song.id,
-      title: song.title,
-      performer: song.performer,
-    }));
+    if (!result.rowCount) {
+      throw new NotFoundError('Lagu tidak ditemukan');
+    }
 
-    return songs;
+    return result.rows;
   }
 
   async getSongById(id) {
