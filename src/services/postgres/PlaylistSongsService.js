@@ -21,6 +21,17 @@ class PlaylistSongsService {
       throw new InvariantError('Lagu gagal ditambahkan ke dalam playlist');
     }
   }
+
+  async getSongsFromPlaylist(playlistId) {
+    const query = {
+      text: 'SELECT id, title, performer FROM songs LEFT JOIN playlist_songs ON songs.id = playlist_songs.song_id WHERE playlist_songs.playlist_id = $1',
+      values: [playlistId],
+    };
+
+    const result = await this._pool.query(query);
+
+    return result.rows;
+  }
 }
 
 module.exports = PlaylistSongsService;
