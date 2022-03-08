@@ -7,7 +7,7 @@ class PlaylistSongsService {
     this._pool = new Pool();
   }
 
-  async addSongToPlaylist(playlistId, songId) {
+  async addSongToPlaylist({ playlistId, songId }) {
     const id = `playlist_songs-${nanoid(16)}`;
 
     const query = {
@@ -22,10 +22,10 @@ class PlaylistSongsService {
     }
   }
 
-  async getSongsFromPlaylist(playlistId) {
+  async getSongsFromPlaylist(id) {
     const query = {
-      text: 'SELECT id, title, performer FROM songs LEFT JOIN playlist_songs ON songs.id = playlist_songs.song_id WHERE playlist_songs.playlist_id = $1',
-      values: [playlistId],
+      text: 'SELECT songs.id, songs.title, songs.performer FROM songs LEFT JOIN playlist_songs ON songs.id = playlist_songs.song_id WHERE playlist_songs.playlist_id = $1',
+      values: [id],
     };
 
     const result = await this._pool.query(query);
@@ -42,7 +42,9 @@ class PlaylistSongsService {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new InvariantError('Lagu gagal dihapus dari playlist');
+      throw new InvariantError(
+        'Lagu gagal dihapus dari playlist. Id tidak ditemukan',
+      );
     }
   }
 }

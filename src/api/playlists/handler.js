@@ -1,6 +1,6 @@
 class PlaylistsHandler {
-  constructor(service, usersService, validator) {
-    this._service = service;
+  constructor(playlistsService, usersService, validator) {
+    this._playlistsService = playlistsService;
     this._usersService = usersService;
     this._validator = validator;
 
@@ -15,7 +15,7 @@ class PlaylistsHandler {
     const { name } = request.payload;
     const { id: credentialId } = request.auth.credentials;
 
-    const playlistId = await this._service.addPlaylist({
+    const playlistId = await this._playlistsService.addPlaylist({
       name,
       owner: credentialId,
     });
@@ -34,7 +34,7 @@ class PlaylistsHandler {
 
   async getPlaylistsHandler(request) {
     const { id: credentialId } = request.auth.credentials;
-    const playlists = await this._service.getPlaylists(credentialId);
+    const playlists = await this._playlistsService.getPlaylists(credentialId);
     const { username } = await this._usersService.getUserById(credentialId);
 
     playlists.map((entry) => {
@@ -54,8 +54,8 @@ class PlaylistsHandler {
     const { id } = request.params;
     const { id: credentialId } = request.auth.credentials;
 
-    await this._service.verifyPlaylistOwner(id, credentialId);
-    await this._service.deletePlaylistById(id);
+    await this._playlistsService.verifyPlaylistOwner(id, credentialId);
+    await this._playlistsService.deletePlaylistById(id, credentialId);
 
     return {
       status: 'success',

@@ -41,6 +41,17 @@ class PlaylistsService {
     return result.rows;
   }
 
+  async getPlaylistsByOwner(id, owner) {
+    const query = {
+      text: 'SELECT id, name FROM playlists WHERE id = $1 AND owner = $2',
+      values: [id, owner],
+    };
+
+    const result = await this._pool.query(query);
+
+    return result.rows[0];
+  }
+
   async deletePlaylistById(id) {
     const query = {
       text: 'DELETE FROM playlists WHERE id = $1 RETURNING id',
