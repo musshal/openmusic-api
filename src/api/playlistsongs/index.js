@@ -11,6 +11,7 @@ module.exports = {
       playlistsService,
       songsService,
       usersService,
+      playlistSongActivitiesService,
       validator,
     },
   ) => {
@@ -19,6 +20,7 @@ module.exports = {
       playlistsService,
       songsService,
       usersService,
+      playlistSongActivitiesService,
       validator,
     );
 

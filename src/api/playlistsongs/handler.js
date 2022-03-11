@@ -4,12 +4,14 @@ class PlaylistSongsHandler {
     playlistsService,
     songsService,
     usersService,
+    playlistSongActivitiesService,
     validator,
   ) {
     this._playlistSongsService = playlistSongsService;
     this._playlistsService = playlistsService;
     this._songsService = songsService;
     this._usersService = usersService;
+    this._playlistSongActivitiesService = playlistSongActivitiesService;
     this._validator = validator;
 
     this.postSongToPlaylistHandler = this.postSongToPlaylistHandler.bind(this);
@@ -27,6 +29,12 @@ class PlaylistSongsHandler {
     await this._playlistsService.verifyPlaylistAccess(playlistId, credentialId);
     await this._songsService.verifyExistingSongById(songId);
     await this._playlistSongsService.addSongToPlaylist({ playlistId, songId });
+    await this._playlistSongActivitiesService.addPlaylistSongActivities(
+      playlistId,
+      songId,
+      credentialId,
+      'add',
+    );
 
     const response = h.response({
       status: 'success',
@@ -52,8 +60,6 @@ class PlaylistSongsHandler {
 
     const { username } = await this._usersService.getUserById(playlist.owner);
 
-    playlist.owner = username;
-
     return {
       status: 'success',
       data: {
@@ -74,6 +80,12 @@ class PlaylistSongsHandler {
 
     await this._playlistsService.verifyPlaylistAccess(id, credentialId);
     await this._playlistSongsService.deleteSongFromPlaylist(id, songId);
+    await this._playlistSongActivitiesService.addPlaylistSongActivities(
+      id,
+      songId,
+      credentialId,
+      'delete',
+    );
 
     return {
       status: 'success',
