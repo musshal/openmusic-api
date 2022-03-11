@@ -34,13 +34,8 @@ class PlaylistsHandler {
 
   async getPlaylistsHandler(request) {
     const { id: credentialId } = request.auth.credentials;
-    const playlists = await this._playlistsService.getPlaylists(credentialId);
-    const { username } = await this._usersService.getUserById(credentialId);
 
-    playlists.map((entry) => {
-      delete entry.owner;
-      entry.username = username;
-    });
+    const playlists = await this._playlistsService.getPlaylists(credentialId);
 
     return {
       status: 'success',
