@@ -29,10 +29,10 @@ class UsersService {
     return result.rows[0].id;
   }
 
-  async getUserById(userId) {
+  async getUsernameById(id) {
     const query = {
-      text: 'SELECT id, username, fullname FROM users WHERE id = $1',
-      values: [userId],
+      text: 'SELECT username FROM users WHERE id = $1',
+      values: [id],
     };
 
     const result = await this._pool.query(query);

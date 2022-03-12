@@ -15,10 +15,10 @@ class PlaylistsHandler {
     const { name } = request.payload;
     const { id: credentialId } = request.auth.credentials;
 
-    const playlistId = await this._playlistsService.addPlaylist({
+    const playlistId = await this._playlistsService.addPlaylist(
       name,
-      owner: credentialId,
-    });
+      credentialId,
+    );
 
     const response = h.response({
       status: 'success',
