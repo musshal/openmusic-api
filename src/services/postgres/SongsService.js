@@ -28,49 +28,31 @@ class SongsService {
   }
 
   async getSongs(title, performer) {
-    if (title !== undefined) {
-      if (performer !== undefined) {
-        const result = await this._pool.query(
-          `SELECT id, title, performer FROM songs
-          WHERE LOWER(title) LIKE '%${title}%'
-          AND LOWER(performer) LIKE '%${performer}%'`,
-        );
+    const baseQuery = 'SELECT id, title, performer FROM songs';
+    let query;
 
-        if (!result.rowCount) {
-          throw new NotFoundError('Lagu tidak ditemukan');
-        }
-
-        return result.rows;
-      }
-
-      const result = await this._pool.query(
-        `SELECT id, title, performer FROM songs
-        WHERE LOWER(title) LIKE '%${title}%'`,
-      );
-
-      if (!result.rowCount) {
-        throw new NotFoundError('Lagu tidak ditemukan');
-      }
-
-      return result.rows;
+    if (title !== undefined && performer !== undefined) {
+      query = {
+        text: `${baseQuery} WHERE LOWER (title) LIKE $1 AND LOWER(performer) LIKE $2`,
+        values: [`%${title}%`, `%${performer}%`],
+      };
+    } else if (title !== undefined) {
+      query = {
+        text: `${baseQuery} WHERE LOWER(title) LIKE $1`,
+        values: [`%${title}%`],
+      };
+    } else if (performer !== undefined) {
+      query = {
+        text: `${baseQuery} WHERE LOWER(performer) LIKE $1`,
+        values: [`%${performer}%`],
+      };
+    } else {
+      query = {
+        text: `${baseQuery}`,
+      };
     }
 
-    if (performer !== undefined) {
-      const result = await this._pool.query(
-        `SELECT id, title, performer FROM songs
-        WHERE LOWER(performer) LIKE '%${performer}%'`,
-      );
-
-      if (!result.rowCount) {
-        throw new NotFoundError('Lagu tidak ditemukan');
-      }
-
-      return result.rows;
-    }
-
-    const result = await this._pool.query(
-      'SELECT id, title, performer FROM songs',
-    );
+    const result = await this._pool.query(query);
 
     if (!result.rowCount) {
       throw new NotFoundError('Lagu tidak ditemukan');
