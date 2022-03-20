@@ -3,8 +3,9 @@ const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
 
 class PlaylistSongsService {
-  constructor() {
+  constructor(cacheService) {
     this._pool = new Pool();
+    this._cacheService = cacheService;
   }
 
   async addSongToPlaylist(playlistId, songId) {
@@ -20,20 +21,35 @@ class PlaylistSongsService {
     if (!result.rowCount) {
       throw new InvariantError('Lagu gagal ditambahkan ke dalam playlist');
     }
+
+    await this._cacheService.delete(`playlist_songs:${playlistId}`);
   }
 
   async getSongsFromPlaylist(playlistId) {
-    const query = {
-      text: `SELECT songs.id, songs.title, songs.performer
-      FROM songs
-      LEFT JOIN playlist_songs ON songs.id = playlist_songs.song_id
-      WHERE playlist_songs.playlist_id = $1`,
-      values: [playlistId],
-    };
+    try {
+      const result = await this._cacheService.get(
+        `playlist_songs:${playlistId}`,
+      );
 
-    const result = await this._pool.query(query);
+      return JSON.parse(result);
+    } catch (error) {
+      const query = {
+        text: `SELECT songs.id, songs.title, songs.performer
+        FROM songs
+        LEFT JOIN playlist_songs ON songs.id = playlist_songs.song_id
+        WHERE playlist_songs.playlist_id = $1`,
+        values: [playlistId],
+      };
 
-    return result.rows;
+      const result = await this._pool.query(query);
+
+      await this._cacheService.set(
+        `playlist_songs:${playlistId}`,
+        JSON.stringify(result.rows),
+      );
+
+      return result.rows;
+    }
   }
 
   async deleteSongFromPlaylist(playlistId, songId) {
@@ -49,6 +65,8 @@ class PlaylistSongsService {
         'Lagu gagal dihapus dari playlist. Id tidak ditemukan',
       );
     }
+
+    await this._cacheService.delete(`playlist_songs:${playlistId}`);
   }
 }
 

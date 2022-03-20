@@ -4,8 +4,9 @@ const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
 
 class PlaylistSongActivitiesService {
-  constructor() {
+  constructor(cacheService) {
     this._pool = new Pool();
+    this._cacheService = cacheService;
   }
 
   async addPlaylistSongActivities(playlistId, songId, userId, action) {
@@ -22,26 +23,41 @@ class PlaylistSongActivitiesService {
       throw new InvariantError('Aktivitas gagal ditambahkan');
     }
 
+    await this._cacheService.delete(`playlist_song_activities:${playlistId}`);
+
     return result.rows[0].id;
   }
 
   async getPlaylistSongActivities(playlistId) {
-    const query = {
-      text: `SELECT users.username, songs.title, playlist_song_activities.action, playlist_song_activities.time
-      FROM playlist_song_activities
-      INNER JOIN users ON playlist_song_activities.user_id = users.id
-      LEFT JOIN songs ON playlist_song_activities.song_id = songs.id
-      WHERE playlist_song_activities.playlist_id = $1 ORDER BY playlist_song_activities.time`,
-      values: [playlistId],
-    };
+    try {
+      const result = await this._cacheService.get(
+        `playlist_song_activities:${playlistId}`,
+      );
 
-    const result = await this._pool.query(query);
+      return JSON.parse(result);
+    } catch (error) {
+      const query = {
+        text: `SELECT users.username, songs.title, playlist_song_activities.action, playlist_song_activities.time
+        FROM playlist_song_activities
+        INNER JOIN users ON playlist_song_activities.user_id = users.id
+        LEFT JOIN songs ON playlist_song_activities.song_id = songs.id
+        WHERE playlist_song_activities.playlist_id = $1 ORDER BY playlist_song_activities.time`,
+        values: [playlistId],
+      };
 
-    if (!result.rowCount) {
-      throw new NotFoundError('Aktivitas tidak ditemukan');
+      const result = await this._pool.query(query);
+
+      if (!result.rowCount) {
+        throw new NotFoundError('Aktivitas tidak ditemukan');
+      }
+
+      await this._cacheService.set(
+        `playlist_song_activities:${playlistId}`,
+        JSON.stringify(result.rows),
+      );
+
+      return result.rows;
     }
-
-    return result.rows;
   }
 }
 

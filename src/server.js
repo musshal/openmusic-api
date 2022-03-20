@@ -44,15 +44,20 @@ const init = async () => {
   const songsService = new SongsService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
-  const collaborationsService = new CollaborationsService();
-  const playlistsService = new PlaylistsService(collaborationsService);
-  const playlistSongsService = new PlaylistSongsService();
-  const playlistSongActivitiesService = new PlaylistSongActivitiesService();
+  const cacheService = new CacheService();
+  const collaborationsService = new CollaborationsService(cacheService);
+  const playlistsService = new PlaylistsService(
+    collaborationsService,
+    cacheService,
+  );
+  const playlistSongsService = new PlaylistSongsService(cacheService);
+  const playlistSongActivitiesService = new PlaylistSongActivitiesService(
+    cacheService,
+  );
   const producerService = ProducerService;
   const storageService = new StorageService(
     path.resolve(__dirname, 'api/uploads/file/covers'),
   );
-  const cacheService = new CacheService();
   const userAlbumLikesService = new UserAlbumLikesService(cacheService);
 
   const server = Hapi.server({
