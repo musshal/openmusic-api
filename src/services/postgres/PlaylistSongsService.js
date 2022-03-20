@@ -8,7 +8,7 @@ class PlaylistSongsService {
   }
 
   async addSongToPlaylist(playlistId, songId) {
-    const id = `playlist_songs-${nanoid(16)}`;
+    const id = `playlist_song-${nanoid(16)}`;
 
     const query = {
       text: 'INSERT INTO playlist_songs VALUES($1, $2, $3) RETURNING id',
