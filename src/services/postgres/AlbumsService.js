@@ -29,7 +29,7 @@ class AlbumsService {
   async getAlbumById(id) {
     const query = [
       {
-        text: 'SELECT id, name, year FROM albums WHERE id = $1',
+        text: 'SELECT id, name, year, cover FROM albums WHERE id = $1',
         values: [id],
       },
       {
@@ -48,7 +48,9 @@ class AlbumsService {
 
     const songsResult = await this._pool.query(query[1]);
 
-    album.songs = songsResult.rows;
+    if (songsResult.rowCount) {
+      album.songs = songsResult.rows;
+    }
 
     return album;
   }
@@ -77,6 +79,21 @@ class AlbumsService {
     if (!result.rowCount) {
       throw new NotFoundError('Album gagal dihapus. Id tidak ditemukan');
     }
+  }
+
+  async addAlbumCoverById(id, file) {
+    const query = {
+      text: 'UPDATE albums SET cover = $1 WHERE id = $2 RETURNING id',
+      values: [file, id],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rows[0].id) {
+      throw new InvariantError('Sampul gagal diunggah');
+    }
+
+    return result.rows[0].id;
   }
 }
 
