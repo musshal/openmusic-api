@@ -6,12 +6,11 @@ module.exports = {
   version: '1.0.0',
   register: async (
     server,
-    { userAlbumLikesService, albumsService, validator },
+    { userAlbumLikesService, albumsService },
   ) => {
     const userAlbumLikesHandler = new UserAlbumLikesHandler(
       userAlbumLikesService,
       albumsService,
-      validator,
     );
 
     server.route(routes(userAlbumLikesHandler));
